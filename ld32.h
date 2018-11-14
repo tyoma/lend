@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* configure tables */
 #ifndef USE_T
-#define USE_T       (MODRM2_T|MODRM_T|DATA1_T|DATA66_T)
+#define USE_T       (PREFIX_T|MODRM2_T|MODRM_T|DATA1_T|DATA66_T)
 #endif
 
 /* length_disasm */
@@ -43,14 +43,14 @@ unsigned int length_disasm(void* opcode0);
     b10,b11,b12,b13,b14,b15,b16,b17,                                           \
     b18,b19,b1a,b1b,b1c,b1d,b1e,b1f                                            \
 ) (                                                                            \
-    (b00<<0x00)|(b01<<0x01)|(b02<<0x02)|(b03<<0x03)|                           \
-    (b04<<0x04)|(b05<<0x05)|(b06<<0x06)|(b07<<0x07)|                           \
-    (b08<<0x08)|(b09<<0x09)|(b0a<<0x0a)|(b0b<<0x0b)|                           \
-    (b0c<<0x0c)|(b0d<<0x0d)|(b0e<<0x0e)|(b0f<<0x0f)|                           \
-    (b10<<0x10)|(b11<<0x11)|(b12<<0x12)|(b13<<0x13)|                           \
-    (b14<<0x14)|(b15<<0x15)|(b16<<0x16)|(b17<<0x17)|                           \
-    (b18<<0x18)|(b19<<0x19)|(b1a<<0x1a)|(b1b<<0x1b)|                           \
-    (b1c<<0x1c)|(b1d<<0x1d)|(b1e<<0x1e)|(b1f<<0x1f)                            \
+    ((unsigned)b00<<0x00)|((unsigned)b01<<0x01)|((unsigned)b02<<0x02)|((unsigned)b03<<0x03)| \
+    ((unsigned)b04<<0x04)|((unsigned)b05<<0x05)|((unsigned)b06<<0x06)|((unsigned)b07<<0x07)| \
+    ((unsigned)b08<<0x08)|((unsigned)b09<<0x09)|((unsigned)b0a<<0x0a)|((unsigned)b0b<<0x0b)| \
+    ((unsigned)b0c<<0x0c)|((unsigned)b0d<<0x0d)|((unsigned)b0e<<0x0e)|((unsigned)b0f<<0x0f)| \
+    ((unsigned)b10<<0x10)|((unsigned)b11<<0x11)|((unsigned)b12<<0x12)|((unsigned)b13<<0x13)| \
+    ((unsigned)b14<<0x14)|((unsigned)b15<<0x15)|((unsigned)b16<<0x16)|((unsigned)b17<<0x17)| \
+    ((unsigned)b18<<0x18)|((unsigned)b19<<0x19)|((unsigned)b1a<<0x1a)|((unsigned)b1b<<0x1b)| \
+    ((unsigned)b1c<<0x1c)|((unsigned)b1d<<0x1d)|((unsigned)b1e<<0x1e)|((unsigned)b1f<<0x1f)  \
 )
 #define CHECK_TABLE(t, v)   ((t[(v)>>5]>>((v)&0x1f))&1)
 #endif
@@ -68,7 +68,7 @@ const static unsigned int prefix_t[] = {
     BITMASK32(0,0,0,0,1,1,1,1, 0,0,0,0,0,0,0,0,  /* 6 */
               0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 7 */
     BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 8 */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 9 */
+              0,0,0,0,0,0,0,0, 0,0,0,1,0,0,0,0), /* 9 */
     BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* a */
               0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* b */
     BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* c */
@@ -95,22 +95,22 @@ const static unsigned int prefix_t[] = {
 #if defined(USE_T) && (USE_T & MODRM2_T)
 const static unsigned int modrm2_t[] = {
            /* 0 1 2 3 4 5 6 7  8 9 a b c d e f */
-    BITMASK32(1,1,1,1,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 0 */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 1 */
-    BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 2 */
+    BITMASK32(1,1,1,1,0,0,0,0, 0,0,0,0,0,1,0,0,  /* 0 */
+              1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1), /* 1 */
+    BITMASK32(0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,  /* 2 */
               0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 3 */
-    BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 4 */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 5 */
-    BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 6 */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* 7 */
+    BITMASK32(1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,  /* 4 */
+              1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1), /* 5 */
+    BITMASK32(1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,  /* 6 */
+              1,1,1,1,1,1,1,0, 1,1,1,1,1,1,1,1), /* 7 */
     BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* 8 */
               1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1), /* 9 */
-    BITMASK32(0,0,0,1,1,1,0,0, 0,0,0,1,1,1,0,1,  /* a */
-              1,1,1,1,1,1,1,1, 0,0,1,1,1,1,1,1), /* b */
-    BITMASK32(1,1,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* c */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0), /* d */
-    BITMASK32(0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,  /* e */
-              0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0)  /* f */
+    BITMASK32(0,0,0,1,1,1,0,0, 0,0,0,1,1,1,1,1,  /* a */
+              1,1,1,1,1,1,1,1, 1,0,1,1,1,1,1,1), /* b */
+    BITMASK32(1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0,  /* c */
+              1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1), /* d */
+    BITMASK32(1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,  /* e */
+              1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1)  /* f */
 };
 #define CHECK_MODRM2(v) CHECK_TABLE(modrm2_t, v)
 #else
@@ -123,7 +123,9 @@ const static unsigned int modrm2_t[] = {
 #endif
 
 /* CHECK_DATA12 */
-#define CHECK_DATA12(v)     ((v)==0xa4||(v)==0xac||(v)==0xba)
+#define CHECK_DATA12(v)     ((v)==0x70||(v)==0x71||(v)==0x72||(v)==0x73||      \
+    (v)==0xa4||(v)==0xac||(v)==0xba||(v)==0xc2||(v)==0xc4||(v)==0xc5||         \
+    (v)==0xc6)
 
 /* CHECK_DATA662 */
 #define CHECK_DATA662(v)    (((v)&0xf0)==0x80)

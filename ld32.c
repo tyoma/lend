@@ -29,22 +29,28 @@ unsigned int length_disasm(void * opcode0) {
 
     unsigned char op, modrm, mod, rm;
 
-prefix:
-    op = *opcode++;
-
-    /* prefix */
-    if (CHECK_PREFIX(op)) {
+    for (; op = *opcode++, CHECK_PREFIX(op); ) {
         if (CHECK_PREFIX_66(op)) ddef = 2;
         else if (CHECK_PREFIX_67(op)) mdef = 2;
-        goto prefix;
     }
 
-    /* two byte opcode */
     if (CHECK_0F(op)) {
         op = *opcode++;
-        if (CHECK_MODRM2(op)) flag++;
-        if (CHECK_DATA12(op)) dsize++;
-        if (CHECK_DATA662(op)) dsize += ddef;
+        if (op == 0x38) {
+            op = *opcode++;
+            flag++;
+        }
+        else if (op == 0x3A) {
+            op = *opcode++;
+            flag++;
+            dsize++;
+        }
+        else {
+            /* two byte opcode */
+            if (CHECK_MODRM2(op)) flag++;
+            if (CHECK_DATA12(op)) dsize++;
+            if (CHECK_DATA662(op)) dsize += ddef;
+        }
     }
 
     /* one byte opcode */
