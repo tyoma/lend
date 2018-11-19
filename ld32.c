@@ -82,5 +82,5 @@ unsigned int length_disasm(void * opcode0) {
 
     opcode += msize + dsize;
 
-    return opcode - (unsigned char *)opcode0;
+    return (unsigned)(opcode - (unsigned char *)opcode0);
 }
